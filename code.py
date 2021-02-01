@@ -1535,12 +1535,6 @@ def run_game():
 
             if color == 230:
                 break
-        
-    print('此代码由王逸凡编写')
-    print('代码总长度1644行，由于时间紧迫，没有做任何优化')
-    print('愿玩的开心')
-    print('创意来自Carl， Denial和声优')
-    print('物理引擎来自王逸凡和声优')
 
     pygame.mixer.init()
     pygame.mixer.music.load('music.mp3')
