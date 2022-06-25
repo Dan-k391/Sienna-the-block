@@ -1,9 +1,9 @@
 // level starts from 0
 var LEVEL = 0;
 // 0 for dark, 1 for bright
-var THEME = [0, 1, 0];
+var THEME = [0, 1, 1];
 
-var maps = [new Map(MAP1, THEME[0]), new Map(MAP2, THEME[1]), new Map(MAP2, THEME[2])];
+var maps = [new Map(MAP1, THEME[0]), new Map(MAP2, THEME[1]), new Map(MAP3, THEME[2])];
 
 var canvas = document.getElementById('myCanvas'); 
 var ctx = canvas.getContext('2d');
@@ -53,79 +53,91 @@ function keydown(event){
         case 38: case 87:
             if (event.shiftKey){
                 // 两个可以被破坏的方块
-                if (maps[LEVEL].map[block.y - 1][block.x] == 3 || maps[LEVEL].map[block.y - 1][block.x] == 4){
+                if (maps[LEVEL].map[block.y - 1][block.x] == 6 || maps[LEVEL].map[block.y - 1][block.x] == 7){
                     block.dash_up();
                 // 重点的情况,直接执行原本操作
                 }else if (maps[LEVEL].map[block.y - 1][block.x] == 2){
                     block.up();
-                }else if (maps[LEVEL].map[block.y - 1][block.x] == 0){
+                }else if (maps[LEVEL].map[block.y - 1][block.x] == block.status){
                     // 前方两格黑色方块就动一
-                    if (maps[LEVEL].map[block.y - 2][block.x] == 0){
+                    if (maps[LEVEL].map[block.y - 2][block.x] == block.status){
                         block.dash_up();
-                    }else if (maps[LEVEL].map[block.y - 2][block.x] != 0){
+                    }else if (maps[LEVEL].map[block.y - 2][block.x] != block.status){
                         block.up();
                     }
                 }
             }else {
-                if (maps[LEVEL].map[block.y - 1][block.x] == 0 || maps[LEVEL].map[block.y - 1][block.x] == 2){
+                if (maps[LEVEL].map[block.y - 1][block.x] == block.status || maps[LEVEL].map[block.y - 1][block.x] == 2){
                     block.up();
+                }else if (maps[LEVEL].map[block.y - 1][block.x] == 3){
+                    block.up();
+                    block.switch();
                 }
             }
             break;
         case 40: case 83:
             if (event.shiftKey){
-                if (maps[LEVEL].map[block.y + 1][block.x] == 3 || maps[LEVEL].map[block.y + 1][block.x] == 4){
+                if (maps[LEVEL].map[block.y + 1][block.x] == 6 || maps[LEVEL].map[block.y + 1][block.x] == 7){
                     block.dash_down();
                 }else if (maps[LEVEL].map[block.y + 1][block.x] == 2){
                     block.down();
-                }else if (maps[LEVEL].map[block.y + 1][block.x] == 0){
-                    if (maps[LEVEL].map[block.y + 2][block.x] == 0){
+                }else if (maps[LEVEL].map[block.y + 1][block.x] == block.status){
+                    if (maps[LEVEL].map[block.y + 2][block.x] == block.status){
                         block.dash_down();
-                    }else if (maps[LEVEL].map[block.y + 2][block.x] != 0){
+                    }else if (maps[LEVEL].map[block.y + 2][block.x] != block.status){
                         block.down();
                     }
                 }
             }else {
-                if (maps[LEVEL].map[block.y + 1][block.x] == 0 || maps[LEVEL].map[block.y + 1][block.x] == 2){
+                if (maps[LEVEL].map[block.y + 1][block.x] == block.status || maps[LEVEL].map[block.y + 1][block.x] == 2){
                     block.down();
+                }else if (maps[LEVEL].map[block.y + 1][block.x] == 3){
+                    block.down();
+                    block.switch();
                 }
             }
             break;
         case 37: case 65:
             if (event.shiftKey){
-                if (maps[LEVEL].map[block.y][block.x - 1] == 3 || maps[LEVEL].map[block.y][block.x - 1] == 4){
+                if (maps[LEVEL].map[block.y][block.x - 1] == 6 || maps[LEVEL].map[block.y][block.x - 1] == 7){
                     block.dash_left();
                 }else if (maps[LEVEL].map[block.y][block.x - 1] == 2){
                     block.left();
-                }else if (maps[LEVEL].map[block.y][block.x - 1] == 0){
-                    if (maps[LEVEL].map[block.y][block.x - 2] == 0){
+                }else if (maps[LEVEL].map[block.y][block.x - 1] == block.status){
+                    if (maps[LEVEL].map[block.y][block.x - 2] == block.status){
                         block.dash_left();
-                    }else if (maps[LEVEL].map[block.y][block.x - 2] != 0){
+                    }else if (maps[LEVEL].map[block.y][block.x - 2] != block.status){
                         block.left();
                     }
                 }
             }else {
-                if (maps[LEVEL].map[block.y][block.x - 1] == 0 || maps[LEVEL].map[block.y][block.x - 1] == 2){
+                if (maps[LEVEL].map[block.y][block.x - 1] == block.status || maps[LEVEL].map[block.y][block.x - 1] == 2){
                     block.left();
+                }else if (maps[LEVEL].map[block.y][block.x - 1] == 3){
+                    block.left();
+                    block.switch();
                 }
             }
             break;
         case 39: case 68:
             if (event.shiftKey){
-                if (maps[LEVEL].map[block.y][block.x + 1] == 3 || maps[LEVEL].map[block.y][block.x + 1] == 4){
+                if (maps[LEVEL].map[block.y][block.x + 1] == 6 || maps[LEVEL].map[block.y][block.x + 1] == 7){
                     block.dash_right();
                 }else if (maps[LEVEL].map[block.y][block.x + 1] == 2){
                     block.right();
-                }else if (maps[LEVEL].map[block.y][block.x + 1] == 0){
-                    if (maps[LEVEL].map[block.y][block.x + 2] == 0){
+                }else if (maps[LEVEL].map[block.y][block.x + 1] == block.status){
+                    if (maps[LEVEL].map[block.y][block.x + 2] == block.status){
                         block.dash_right();
-                    }else if (maps[LEVEL].map[block.y][block.x + 2] != 0){
+                    }else if (maps[LEVEL].map[block.y][block.x + 2] != block.status){
                         block.right();
                     }
                 }
             }else {
-                if (maps[LEVEL].map[block.y][block.x + 1] == 0 || maps[LEVEL].map[block.y][block.x + 1] == 2){
+                if (maps[LEVEL].map[block.y][block.x + 1] == block.status || maps[LEVEL].map[block.y][block.x + 1] == 2){
                     block.right();
+                }else if (maps[LEVEL].map[block.y][block.x + 1] == 3){
+                    block.right();
+                    block.switch();
                 }
             }
             break;
@@ -163,6 +175,7 @@ function Player(x, y, start_x, start_y){
     this.y = y;
     this.start_x = start_x;
     this.start_y = start_y;
+    this.status = 0;
 
     this.up = function(){
         this.y -= 1;
@@ -186,33 +199,33 @@ function Player(x, y, start_x, start_y){
     }
     // ================dash======================
     this.dash_up = function(){
-        if (maps[LEVEL].map[this.y - 1][this.x] == 3 || maps[LEVEL].map[this.y - 1][this.x] == 4){
+        if (maps[LEVEL].map[this.y - 1][this.x] == 6 || maps[LEVEL].map[this.y - 1][this.x] == 7){
             maps[LEVEL].break(this.x, this.y - 1);
-        }else {
+        }else{
             this.y -= 2;
         }
         render();
     }
     this.dash_down = function(){
-        if (maps[LEVEL].map[this.y + 1][this.x] == 3 || maps[LEVEL].map[this.y + 1][this.x] == 4){
+        if (maps[LEVEL].map[this.y + 1][this.x] == 6 || maps[LEVEL].map[this.y + 1][this.x] == 7){
             maps[LEVEL].break(this.x, this.y + 1);
-        }else {
+        }else{
             this.y += 2;
         }
         render();
     }
     this.dash_left = function(){
-        if (maps[LEVEL].map[this.y][this.x - 1] == 3 || maps[LEVEL].map[this.y][this.x - 1] == 4){
+        if (maps[LEVEL].map[this.y][this.x - 1] == 6 || maps[LEVEL].map[this.y][this.x - 1] == 7){
             maps[LEVEL].break(this.x - 1, this.y);
-        }else {
+        }else{
             this.x -= 2;
         }
         render();
     }
     this.dash_right = function(){
-        if (maps[LEVEL].map[this.y][this.x + 1] == 3 || maps[LEVEL].map[this.y][this.x + 1] == 4){
+        if (maps[LEVEL].map[this.y][this.x + 1] == 6 || maps[LEVEL].map[this.y][this.x + 1] == 7){
             maps[LEVEL].break(this.x + 1, this.y);
-        }else {
+        }else{
             this.x += 2;
         }
         render();
@@ -247,10 +260,19 @@ function Player(x, y, start_x, start_y){
         LEVEL += 1;
         this.set_xy(START_POS[LEVEL][0], START_POS[LEVEL][1]);
         this.set_start(Math.floor(canvas.width / 2 - (MAP_SIZE[LEVEL][0] + 1) * 20), Math.floor(canvas.height / 2 - 10 - (MAP_SIZE[LEVEL][1] + 1) * 20));
-        save();
+        // autosave off
+        // save();
         render();
     }
 
+    // switch to 0 or 1
+    this.switch = function(){
+        if (this.status == 0){
+            this.status = 1;
+        }else{
+            this.status = 0;
+        }
+    }
 }
 
 function Map(map, theme){
@@ -269,9 +291,12 @@ function Map(map, theme){
                         ctx.fillStyle = '#0000FF';
                         ctx.fillRect(start_x + 40 * x, start_y + 40 * y, 40, 40);
                     }else if (this.map[y][x] == 3){
+                        ctx.fillStyle = '#00FF00';
+                        ctx.fillRect(start_x + 40 * x, start_y + 40 * y, 40, 40);
+                    }else if (this.map[y][x] == 6){
                         ctx.fillStyle = '#696969';
                         ctx.fillRect(start_x + 40 * x, start_y + 40 * y, 40, 40);
-                    }else if (this.map[y][x] == 4){
+                    }else if (this.map[y][x] == 7){
                         ctx.fillStyle = '#0C0C0C';
                         ctx.fillRect(start_x + 40 * x, start_y + 40 * y, 40, 40);
                     }
@@ -289,9 +314,12 @@ function Map(map, theme){
                             ctx.fillStyle = '#0000FF';
                             ctx.fillRect(start_x + 40 * x, start_y + 40 * y, 40, 40);
                         }else if (this.map[y][x] == 3){
+                            ctx.fillStyle = '#00FF00';
+                            ctx.fillRect(start_x + 40 * x, start_y + 40 * y, 40, 40);
+                        }else if (this.map[y][x] == 6){
                             ctx.fillStyle = '#696969';
                             ctx.fillRect(start_x + 40 * x, start_y + 40 * y, 40, 40);
-                        }else if (this.map[y][x] == 4){
+                        }else if (this.map[y][x] == 7){
                             ctx.fillStyle = '#0C0C0C';
                             ctx.fillRect(start_x + 40 * x, start_y + 40 * y, 40, 40);
                         }
