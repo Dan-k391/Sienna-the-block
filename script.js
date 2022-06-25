@@ -1,9 +1,9 @@
 // level starts from 0
 var LEVEL = 0;
 // 0 for dark, 1 for bright
-var THEME = [0, 1, 1];
+var THEME = [0, 1, 1, 0];
 
-var maps = [new Map(MAP1, THEME[0]), new Map(MAP2, THEME[1]), new Map(MAP3, THEME[2])];
+var maps = [new Map(MAP1, THEME[0]), new Map(MAP2, THEME[1]), new Map(MAP3, THEME[2]), new Map(MAP4, THEME[3])];
 
 var canvas = document.getElementById('myCanvas'); 
 var ctx = canvas.getContext('2d');
@@ -58,6 +58,9 @@ function keydown(event){
                 // 重点的情况,直接执行原本操作
                 }else if (maps[LEVEL].map[block.y - 1][block.x] == 2){
                     block.up();
+                }else if (maps[LEVEL].map[block.y - 1][block.x] == 3){
+                    block.up();
+                    block.switch();
                 }else if (maps[LEVEL].map[block.y - 1][block.x] == block.status){
                     // 前方两格黑色方块就动一
                     if (maps[LEVEL].map[block.y - 2][block.x] == block.status){
@@ -81,6 +84,9 @@ function keydown(event){
                     block.dash_down();
                 }else if (maps[LEVEL].map[block.y + 1][block.x] == 2){
                     block.down();
+                }else if (maps[LEVEL].map[block.y + 1][block.x] == 3){
+                    block.down();
+                    block.switch();
                 }else if (maps[LEVEL].map[block.y + 1][block.x] == block.status){
                     if (maps[LEVEL].map[block.y + 2][block.x] == block.status){
                         block.dash_down();
@@ -103,6 +109,9 @@ function keydown(event){
                     block.dash_left();
                 }else if (maps[LEVEL].map[block.y][block.x - 1] == 2){
                     block.left();
+                }else if (maps[LEVEL].map[block.y][block.x - 1] == 3){
+                    block.left();
+                    block.switch();
                 }else if (maps[LEVEL].map[block.y][block.x - 1] == block.status){
                     if (maps[LEVEL].map[block.y][block.x - 2] == block.status){
                         block.dash_left();
@@ -125,6 +134,9 @@ function keydown(event){
                     block.dash_right();
                 }else if (maps[LEVEL].map[block.y][block.x + 1] == 2){
                     block.right();
+                }else if (maps[LEVEL].map[block.y][block.x + 1] == 3){
+                    block.right();
+                    block.switch();
                 }else if (maps[LEVEL].map[block.y][block.x + 1] == block.status){
                     if (maps[LEVEL].map[block.y][block.x + 2] == block.status){
                         block.dash_right();
@@ -262,6 +274,7 @@ function Player(x, y, start_x, start_y){
         this.set_start(Math.floor(canvas.width / 2 - (MAP_SIZE[LEVEL][0] + 1) * 20), Math.floor(canvas.height / 2 - 10 - (MAP_SIZE[LEVEL][1] + 1) * 20));
         // autosave off
         // save();
+        this.status = 0;
         render();
     }
 
