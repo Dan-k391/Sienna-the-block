@@ -1,6 +1,6 @@
 // level starts from 0
 var LEVEL = 0;
-// 0 for dark, 1 for bright
+// 0 for bright, 1 for dark
 var THEME = [0, 1, 1, 0];
 
 var maps = [new Map(MAP1, THEME[0]), new Map(MAP2, THEME[1]), new Map(MAP3, THEME[2]), new Map(MAP4, THEME[3])];
@@ -61,6 +61,10 @@ function keydown(event){
                 }else if (maps[LEVEL].map[block.y - 1][block.x] == 3){
                     block.up();
                     block.switch();
+                }else if (maps[LEVEL].map[block.y - 1][block.x] == 4){
+                    block.trans();
+                }else if (maps[LEVEL].map[block.y - 1][block.x] == 8){
+                    block.egg()
                 }else if (maps[LEVEL].map[block.y - 1][block.x] == block.status){
                     // 前方两格黑色方块就动一
                     if (maps[LEVEL].map[block.y - 2][block.x] == block.status){
@@ -75,6 +79,8 @@ function keydown(event){
                 }else if (maps[LEVEL].map[block.y - 1][block.x] == 3){
                     block.up();
                     block.switch();
+                }else if (maps[LEVEL].map[block.y - 1][block.x] == 8){
+                    block.egg()
                 }
             }
             break;
@@ -87,6 +93,10 @@ function keydown(event){
                 }else if (maps[LEVEL].map[block.y + 1][block.x] == 3){
                     block.down();
                     block.switch();
+                }else if (maps[LEVEL].map[block.y + 1][block.x] == 4){
+                    block.trans();
+                }else if (maps[LEVEL].map[block.y + 1][block.x] == 8){
+                    block.egg()
                 }else if (maps[LEVEL].map[block.y + 1][block.x] == block.status){
                     if (maps[LEVEL].map[block.y + 2][block.x] == block.status){
                         block.dash_down();
@@ -100,6 +110,8 @@ function keydown(event){
                 }else if (maps[LEVEL].map[block.y + 1][block.x] == 3){
                     block.down();
                     block.switch();
+                }else if (maps[LEVEL].map[block.y + 1][block.x] == 8){
+                    block.egg()
                 }
             }
             break;
@@ -112,6 +124,10 @@ function keydown(event){
                 }else if (maps[LEVEL].map[block.y][block.x - 1] == 3){
                     block.left();
                     block.switch();
+                }else if (maps[LEVEL].map[block.y][block.x - 1] == 4){
+                    block.trans();
+                }else if (maps[LEVEL].map[block.y][block.x - 1] == 8){
+                    block.egg()
                 }else if (maps[LEVEL].map[block.y][block.x - 1] == block.status){
                     if (maps[LEVEL].map[block.y][block.x - 2] == block.status){
                         block.dash_left();
@@ -125,6 +141,8 @@ function keydown(event){
                 }else if (maps[LEVEL].map[block.y][block.x - 1] == 3){
                     block.left();
                     block.switch();
+                }else if (maps[LEVEL].map[block.y][block.x - 1] == 8){
+                    block.egg()
                 }
             }
             break;
@@ -137,6 +155,10 @@ function keydown(event){
                 }else if (maps[LEVEL].map[block.y][block.x + 1] == 3){
                     block.right();
                     block.switch();
+                }else if (maps[LEVEL].map[block.y][block.x + 1] == 4){
+                    block.trans();
+                }else if (maps[LEVEL].map[block.y][block.x + 1] == 8){
+                    block.egg()
                 }else if (maps[LEVEL].map[block.y][block.x + 1] == block.status){
                     if (maps[LEVEL].map[block.y][block.x + 2] == block.status){
                         block.dash_right();
@@ -150,6 +172,8 @@ function keydown(event){
                 }else if (maps[LEVEL].map[block.y][block.x + 1] == 3){
                     block.right();
                     block.switch();
+                }else if (maps[LEVEL].map[block.y][block.x + 1] == 8){
+                    block.egg()
                 }
             }
             break;
@@ -278,13 +302,29 @@ function Player(x, y, start_x, start_y){
         render();
     }
 
-    // switch to 0 or 1
+    // switch status to 0 or 1
     this.switch = function(){
         if (this.status == 0){
             this.status = 1;
         }else{
             this.status = 0;
         }
+        render();
+    }
+
+    // transform specific blocks into 0 or 1
+    this.trans = function(){
+        if (maps[LEVEL].map[TRANS_BLOCK_POS[LEVEL][1]][TRANS_BLOCK_POS[LEVEL][0]] == 0){
+            maps[LEVEL].map[TRANS_BLOCK_POS[LEVEL][1]][TRANS_BLOCK_POS[LEVEL][0]] = 1;
+        }else{
+            maps[LEVEL].map[TRANS_BLOCK_POS[LEVEL][1]][TRANS_BLOCK_POS[LEVEL][0]] = 0;
+        }
+        render();
+    }
+
+    // add actions in the future
+    this.egg = function(){
+        console.log("egg");
     }
 }
 
@@ -305,6 +345,9 @@ function Map(map, theme){
                         ctx.fillRect(start_x + 40 * x, start_y + 40 * y, 40, 40);
                     }else if (this.map[y][x] == 3){
                         ctx.fillStyle = '#00FF00';
+                        ctx.fillRect(start_x + 40 * x, start_y + 40 * y, 40, 40);
+                    }else if (this.map[y][x] == 4){
+                        ctx.fillStyle = '#FFFF00';
                         ctx.fillRect(start_x + 40 * x, start_y + 40 * y, 40, 40);
                     }else if (this.map[y][x] == 6){
                         ctx.fillStyle = '#696969';
@@ -328,6 +371,9 @@ function Map(map, theme){
                             ctx.fillRect(start_x + 40 * x, start_y + 40 * y, 40, 40);
                         }else if (this.map[y][x] == 3){
                             ctx.fillStyle = '#00FF00';
+                            ctx.fillRect(start_x + 40 * x, start_y + 40 * y, 40, 40);
+                        }else if (this.map[y][x] == 4){
+                            ctx.fillStyle = '#FFFF00';
                             ctx.fillRect(start_x + 40 * x, start_y + 40 * y, 40, 40);
                         }else if (this.map[y][x] == 6){
                             ctx.fillStyle = '#696969';
