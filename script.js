@@ -1,9 +1,9 @@
 // level starts from 0
 var LEVEL = 0;
 // 0 for bright, 1 for dark
-var THEME = [0, 1, 1, 0];
+var THEME = [0, 1, 1, 1, 0];
 
-var maps = [new Map(MAP1, THEME[0]), new Map(MAP2, THEME[1]), new Map(MAP3, THEME[2]), new Map(MAP4, THEME[3])];
+var maps = [new Map(MAP1, THEME[0]), new Map(MAP2, THEME[1]), new Map(MAP3, THEME[2]), new Map(MAP4, THEME[3]), new Map(MAP5, THEME[4])];
 
 var canvas = document.getElementById('myCanvas'); 
 var ctx = canvas.getContext('2d');
