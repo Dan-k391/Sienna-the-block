@@ -280,8 +280,8 @@ class Level {
             case 0:
                 for (let y = 0; y < this.map.length; y++) {
                     for (let x = 0; x < this.map[y].length; x++) {
-                        let destX = startX + 40 * x;
-                        let destY = startY + 40 * y;
+                        let destX = startX + CHUNK_SIZE * x;
+                        let destY = startY + CHUNK_SIZE * y;
                         switch (this.map[y][x]) {
                             case 1:
                                 drawChunk(destX, destY, '#000000');
@@ -400,12 +400,12 @@ class Font {
             for (let y = 0; y < bitmap.length; y++) {
                 for (let x = 0; x < bitmap[y].length; x++) {
                     if (bitmap[y][x] == 1){
-                        // half transparent
-                        ctx.globalAlpha = 0.7;
+                        // half transparent, currently not needed
+                        // ctx.globalAlpha = 0.7;
                         ctx.fillStyle = '#000000';
                         // every letter width is 4
                         ctx.fillRect(this.startX + scale * 5 * (x + i * 4), this.startY + scale * 5 * y, scale * 5, scale * 5);
-                        ctx.globalAlpha = 1;
+                        // ctx.globalAlpha = 1;
                     }
                 }
             }
@@ -419,12 +419,14 @@ for (let i = 0; i < MAP_LIST.length; i++) {
     levels.add(new Level(MAP_LIST[i], THEMES[i], MAP_SIZE[i], START_POS[i], FINISH_COORD[i], TRANS_BLOCK_POS[i]));
 }
 
-// stupid way, use a variable to record whether the game has started
-let gameStarted = false;
+let Ingame = false;
 
 let stage = 0;
 
 let player = new Player(0, 1, 0, 0);
+// values for the special effects
+let alpha = 1;
+let delta = 0.01;
 
 // draws the specific chunk at the given coordinates
 // x和y为原始坐标，不用换算
@@ -479,8 +481,9 @@ function keydown(event) {
     switch(event.keyCode) {
         // KeyC to start the game
         case 67:
-            gameStarted = true;
-            render();    
+            if (!Ingame) {
+                startGame();
+            }
         // STRICTLY OBEY UP DOWN LEFT RIGHT
         case 38: case 87:
             if (event.shiftKey) {
@@ -517,28 +520,160 @@ function keydown(event) {
     }
 }
 
+function startGame() {
+    Ingame = true;
+    // javascript 666666
+    
+    requestAnimationFrame(plotOne);
+}
+
 function renderStart() {
+    clearCanvas();
     // center the subtitles
-    let startX = Math.floor(canvas.width / 2 - 300);
+    let startX = Math.floor(canvas.width / 2 - 350);
     let startY = Math.floor(canvas.height / 2 - 200);
 
     let title = new Font('The Block', startX, startY);
     let subTitle1 = new Font('Dan-k391', startX + 50, startY + 100);
     let subTitle2 = new Font('Press F11 to fullscreen', startX + 50, startY + 150);
-    let subTitle3 = new Font('Press C to start', startX + 50, startY + 200);
+    let subTitle3 = new Font('Fullscreen for best experience', startX + 50, startY + 200);
+    let subTitle4 = new Font('Press C to start', startX + 50, startY + 250);
 
     title.draw(2);
     subTitle1.draw(1);
     subTitle2.draw(1);
     subTitle3.draw(1);
+    subTitle4.draw(1);
+}
+
+function plotOne() {
+    renderSubtitles(
+        [
+            'Once upon a time',
+            'there was a block',
+            'her name is Sienna',
+            'and she was trapped in a giant maze',
+            'find the way out',
+            '(Press c to skip)'
+        ], 9000
+    );
+}
+
+function renderSubtitles(subtitles, time) {
+    clearCanvas();
+
+    // figure out the longest subtitle
+    let maxLen = 0;
+    for (let i = 0; i < subtitles.length; i++) {
+        if (subtitles[i].length > maxLen) {
+            maxLen = subtitles[i].length;
+        }
+    }
+
+    // don't care about how it works, it just works fine
+    let offSetX = 25 * (maxLen / 2 - 1);
+    let offSetY = 50 * (subtitles.length / 2 + 1);
+
+    let startX = Math.floor(canvas.width / 2 - offSetX);
+    let startY = Math.floor(canvas.height / 2 - offSetY);
+
+    for (let i = 0; i < subtitles.length; i++) {
+        let subTitle = new Font(subtitles[i], startX, startY + 50 * i);
+        subTitle.draw(1);
+    }
+
+    setTimeout(function() {
+        render();
+        requestAnimationFrame(render);
+    }, time);
+}
+
+function clearCanvas() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
 }
 
 function render() {
     // if game has not started render the start page
-    if (gameStarted) {
+    if (Ingame) {
+        console.log('render');
         player.draw();
     }
     else {
         renderStart();
     }
 }
+
+// TODO: finish this function
+function fadeOutThenIn(contentOut, contentIn) {
+    console.log('fade out');
+    alpha -= delta;
+    clearCanvas();
+
+    ctx.globalAlpha = alpha;
+    contentOut();
+    // -1留白一会
+    if (alpha > -1 && !fadeOutComplete) {
+        requestAnimationFrame(fadeOutThenIn.bind(this, contentOut, contentIn));
+    }
+    else {
+        alpha = 1;
+        ctx.globalAlpha = alpha;
+    }
+
+    if (fadeOutComplete) {
+        console.log('fade in');
+        alpha += delta;
+        clearCanvas();
+
+        ctx.globalAlpha = alpha;
+        content();
+
+        if (alpha < 1) {
+            requestAnimationFrame(fadeIn.bind(this, content));
+        }
+        else {
+            alpha = 1;
+            ctx.globalAlpha = alpha;
+            render();
+        }
+    }
+}
+
+// has problems
+function fadeOut(content) {
+    console.log('fade out');
+    alpha -= delta;
+    clearCanvas();
+
+    ctx.globalAlpha = alpha;
+    content();
+    // -1留白一会
+    if (alpha > -1) {
+        requestAnimationFrame(fadeOut.bind(this, content));
+    }
+    else {
+        alpha = 1;
+        ctx.globalAlpha = alpha;
+    }
+}
+
+// has problems too
+function fadeIn(content) {
+    console.log('fade in');
+    alpha += delta;
+    clearCanvas();
+
+    ctx.globalAlpha = alpha;
+    content();
+
+    if (alpha < 1) {
+        requestAnimationFrame(fadeIn.bind(this, content));
+    }
+    else {
+        alpha = 1;
+        ctx.globalAlpha = alpha;
+        render();
+    }
+}
+
+
