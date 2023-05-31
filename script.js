@@ -11,6 +11,7 @@ import {
     MAP_SIZE,
     THEMES,
     TRANS_BLOCK_POS,
+    TELEPORT_POS,
     MAP_LIST 
 } from './maps.js';
 
@@ -66,6 +67,11 @@ class Player {
         }
     }
 
+    teleport() {
+        let teleportPos = levels.get(stage).getTeleportPos();
+        this.setXY(teleportPos[0], teleportPos[1]);
+    }
+
     // the movement judgement is basically a pieace of s**t code
     // but I just don't want to optimize it🤣
 
@@ -76,6 +82,10 @@ class Player {
         else if (levels.get(stage).getBlock(this.x, this.y - 1) == 3) {
             this.y--;
             this.switch();
+        }
+        else if (levels.get(stage).getBlock(this.x, this.y - 1) == 5) {
+            this.y--;
+            this.teleport();
         }
         else if (levels.get(stage).getBlock(this.x, this.y - 1) == 8) {
             this.egg();
@@ -92,6 +102,10 @@ class Player {
             this.y++;
             this.switch();
         }
+        else if (levels.get(stage).getBlock(this.x, this.y + 1) == 5) {
+            this.y++;
+            this.teleport();
+        }
         else if (levels.get(stage).getBlock(this.x, this.y + 1) == 8) {
             this.egg();
         }
@@ -107,6 +121,10 @@ class Player {
             this.x--;
             this.switch();
         }
+        else if (levels.get(stage).getBlock(this.x - 1, this.y) == 5) {
+            this.x--;
+            this.teleport();
+        }
         else if (levels.get(stage).getBlock(this.x - 1, this.y) == 8) {
             this.egg();
         }
@@ -121,6 +139,10 @@ class Player {
         else if (levels.get(stage).getBlock(this.x + 1, this.y) == 3) {
             this.x++;
             this.switch();
+        }
+        else if (levels.get(stage).getBlock(this.x + 1, this.y) == 5) {
+            this.x++;
+            this.teleport();
         }
         else if (levels.get(stage).getBlock(this.x + 1, this.y) == 8) {
             this.egg();
@@ -146,6 +168,9 @@ class Player {
         }
         else if (levels.get(stage).getBlock(this.x, this.y - 1) == 4) {
             levels.get(stage).transBlock();
+        }
+        else if (levels.get(stage).getBlock(this.x, this.y - 1) == 5) {
+            this.moveUp();
         }
         else if (levels.get(stage).getBlock(this.x, this.y - 1) == 8) {
             this.egg();
@@ -176,6 +201,9 @@ class Player {
         else if (levels.get(stage).getBlock(this.x, this.y + 1) == 4) {
             levels.get(stage).transBlock();
         }
+        else if (levels.get(stage).getBlock(this.x, this.y + 1) == 5) {
+            this.moveDown();
+        }
         else if (levels.get(stage).getBlock(this.x, this.y + 1) == 8) {
             this.egg();
         }
@@ -203,6 +231,9 @@ class Player {
         else if (levels.get(stage).getBlock(this.x - 1, this.y) == 4) {
             levels.get(stage).transBlock();
         }
+        else if (levels.get(stage).getBlock(this.x - 1, this.y) == 5) {
+            this.moveLeft();
+        }
         else if (levels.get(stage).getBlock(this.x - 1, this.y) == 8) {
             this.egg();
         }
@@ -229,6 +260,9 @@ class Player {
         }
         else if (levels.get(stage).getBlock(this.x + 1, this.y) == 4) {
             levels.get(stage).transBlock();
+        }
+        else if (levels.get(stage).getBlock(this.x + 1, this.y) == 5) {
+            this.moveRight();
         }
         else if (levels.get(stage).getBlock(this.x + 1, this.y) == 8) {
             this.egg();
@@ -264,7 +298,7 @@ class Player {
 }
 
 class Level {
-    constructor(map, theme, mapSize, startPos, finishCoord, transBlockPos) {
+    constructor(map, theme, mapSize, startPos, finishCoord, transBlockPos, teleportPos) {
         this.map = map;
         // 0: light theme, 1: dark theme
         this.theme = theme;
@@ -272,6 +306,9 @@ class Level {
         this.startPos = startPos;
         this.finishCoord = finishCoord;
         this.transBlockPos = transBlockPos;
+        this.teleportPos = teleportPos;
+        // start from 0
+        this.teleportCount = 0;
     }
 
     drawMap(startX, startY) {
@@ -294,6 +331,9 @@ class Level {
                                 break;
                             case 4:
                                 drawChunk(destX, destY, '#FFFF00');
+                                break;
+                            case 5:
+                                drawChunk(destX, destY, '#FF00FF');
                                 break;
                             case 6:
                                 drawChunk(destX, destY, '#696969');
@@ -324,6 +364,9 @@ class Level {
                                     break;
                                 case 4:
                                     drawChunk(destX, destY, '#FFFF00');
+                                    break;
+                                case 5:
+                                    drawChunk(destX, destY, '#FF00FF');
                                     break;
                                 case 6:
                                     drawChunk(destX, destY, '#696969');
@@ -361,6 +404,14 @@ class Level {
         }
         else {
             this.map[this.transBlockPos[1]][this.transBlockPos[0]] = 0;
+        }
+    }
+
+    getTeleportPos() {
+        if (this.teleportCount < this.teleportPos.length) {
+            let pos = this.teleportPos[this.teleportCount];
+            this.teleportCount++;
+            return pos;
         }
     }
 
@@ -416,9 +467,10 @@ class Font {
 let levels = new Levels();
 // add each map level into levels
 for (let i = 0; i < MAP_LIST.length; i++) {
-    levels.add(new Level(MAP_LIST[i], THEMES[i], MAP_SIZE[i], START_POS[i], FINISH_COORD[i], TRANS_BLOCK_POS[i]));
+    levels.add(new Level(MAP_LIST[i], THEMES[i], MAP_SIZE[i], START_POS[i], FINISH_COORD[i], TRANS_BLOCK_POS[i], TELEPORT_POS[i]));
 }
 
+// keep as false
 let Ingame = false;
 
 let stage = 0;
@@ -555,7 +607,7 @@ function plotOne() {
             'and she was trapped in a giant maze',
             'find the way out',
             '(Press c to skip)'
-        ], 9000
+        ], 10000
     );
 }
 
