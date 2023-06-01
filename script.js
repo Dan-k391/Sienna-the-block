@@ -12,7 +12,8 @@ import {
     THEMES,
     TRANS_BLOCK_POS,
     TELEPORT_POS,
-    MAP_LIST 
+    MAP_LIST,
+    FINAL
 } from './maps.js';
 
 import { ascii } from './ascii.js';
@@ -45,6 +46,11 @@ class Player {
 
     levelUp() {
         stage++;
+        // whether the game ends
+        if (stage == FINAL) {
+            console.log('you win');
+            return;
+        }
         this.setXY(levels.get(stage).startPos[0], levels.get(stage).startPos[1]);
         let startX = Math.floor(canvas.width / 2 - (levels.get(stage).mapSize[0] + 1) * 20);
         let startY = Math.floor(canvas.height / 2 - (levels.get(stage).mapSize[1] + 1) * 20);
@@ -473,6 +479,7 @@ for (let i = 0; i < MAP_LIST.length; i++) {
 // keep as false
 let Ingame = false;
 
+// stage starts from 0
 let stage = 0;
 
 let player = new Player(0, 1, 0, 0);
@@ -520,7 +527,8 @@ function init() {
 function resizecanvas() {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
-    player.setXY(levels.get(stage).startPos[0], levels.get(stage).startPos[1]);
+    // The following line sets the player to the start position
+    // player.setXY(levels.get(stage).startPos[0], levels.get(stage).startPos[1]);
     // tmd完全看不懂
     // 看懂一点了
     let startX = Math.floor(canvas.width / 2 - (levels.get(stage).mapSize[0] + 1) * 20);
@@ -647,7 +655,6 @@ function clearCanvas() {
 function render() {
     // if game has not started render the start page
     if (Ingame) {
-        console.log('render');
         player.draw();
     }
     else {

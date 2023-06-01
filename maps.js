@@ -103,3 +103,5 @@ const MAP5 = [[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 //               [9, 8, 9, 9, 9, 9, 9, 9, 9, 9, 9]];
 
 export const MAP_LIST = [MAP1, MAP2, MAP3, MAP4, MAP5];
+
+export const FINAL = 5;
