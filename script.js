@@ -62,6 +62,10 @@ class Player {
 
     egg() {
         console.log('egg');
+        // the egg for each level
+        if (stage == 0) {
+            eggOne();
+        }
     }
 
     switch() {
@@ -95,6 +99,8 @@ class Player {
         }
         else if (levels.get(stage).getBlock(this.x, this.y - 1) == 8) {
             this.egg();
+            // do not render the map when the egg is eaten
+            return;
         }
         this.checkWin();
         render();
@@ -114,6 +120,7 @@ class Player {
         }
         else if (levels.get(stage).getBlock(this.x, this.y + 1) == 8) {
             this.egg();
+            return;
         }
         this.checkWin();
         render();
@@ -133,6 +140,7 @@ class Player {
         }
         else if (levels.get(stage).getBlock(this.x - 1, this.y) == 8) {
             this.egg();
+            return;
         }
         this.checkWin();
         render();
@@ -152,6 +160,7 @@ class Player {
         }
         else if (levels.get(stage).getBlock(this.x + 1, this.y) == 8) {
             this.egg();
+            return;
         }
         this.checkWin();
         render();
@@ -180,6 +189,7 @@ class Player {
         }
         else if (levels.get(stage).getBlock(this.x, this.y - 1) == 8) {
             this.egg();
+            return;
         }
         else if (levels.get(stage).getBlock(this.x, this.y - 1) == this.status) {
             // 前方两格黑色方块就动一
@@ -212,6 +222,7 @@ class Player {
         }
         else if (levels.get(stage).getBlock(this.x, this.y + 1) == 8) {
             this.egg();
+            return;
         }
         else if (levels.get(stage).getBlock(this.x, this.y + 1) == this.status) {
             if (levels.get(stage).getBlock(this.x, this.y + 2) == this.status) {
@@ -242,6 +253,7 @@ class Player {
         }
         else if (levels.get(stage).getBlock(this.x - 1, this.y) == 8) {
             this.egg();
+            return;
         }
         else if (levels.get(stage).getBlock(this.x - 1, this.y) == this.status) {
             if (levels.get(stage).getBlock(this.x - 2, this.y) == this.status) {
@@ -272,6 +284,7 @@ class Player {
         }
         else if (levels.get(stage).getBlock(this.x + 1, this.y) == 8) {
             this.egg();
+            return;
         }
         else if (levels.get(stage).getBlock(this.x + 1, this.y) == this.status) {
             if (levels.get(stage).getBlock(this.x + 2, this.y) == this.status) {
@@ -282,6 +295,20 @@ class Player {
             }
         }
         render();
+    }
+
+    switchColor() {
+        if (this.color == "#FF0000") {
+            this.setColor("#A0522D");
+        }
+        else {
+            this.setColor("#FF0000");
+        }
+        render();
+    }
+
+    setColor(color) {
+        this.color = color;
     }
 
     setXY(x, y) {
@@ -544,6 +571,11 @@ function keydown(event) {
             if (!Ingame) {
                 startGame();
             }
+            break;
+        // switch the color
+        case 88:
+            player.switchColor();
+            break;
         // STRICTLY OBEY UP DOWN LEFT RIGHT
         case 38: case 87:
             if (event.shiftKey) {
@@ -576,6 +608,9 @@ function keydown(event) {
             else {
                 player.moveRight();
             }
+            break;
+        case 32:
+            render();
             break;
     }
 }
@@ -614,12 +649,25 @@ function plotOne() {
             'her name is Sienna',
             'and she was trapped in a giant maze',
             'find the way out',
-            '(Press c to skip)'
-        ], 10000
+            '(Press space to continue)'
+        ]
     );
 }
 
-function renderSubtitles(subtitles, time) {
+function eggOne() {
+    renderSubtitles(
+        [
+            'In fact',
+            'Sienna is not just a name',
+            'But also a color',
+            'Press X to switch the color of Sienna',
+            '(Press space to continue)'
+        ]
+    );
+}
+
+// call without timeout
+function renderSubtitles(subtitles) {
     clearCanvas();
 
     // figure out the longest subtitle
@@ -642,10 +690,7 @@ function renderSubtitles(subtitles, time) {
         subTitle.draw(1);
     }
 
-    setTimeout(function() {
-        render();
-        requestAnimationFrame(render);
-    }, time);
+    // setTimeout(render, time);
 }
 
 function clearCanvas() {
