@@ -102,6 +102,10 @@ class Player {
             // do not render the map when the egg is eaten
             return;
         }
+        else if (levels.get(stage).getBlock(this.x, this.y - 1) == 10) {
+            this.y--;
+            levels.get(stage).illume(this.x, this.y);
+        }
         this.checkWin();
         render();
     }
@@ -121,6 +125,10 @@ class Player {
         else if (levels.get(stage).getBlock(this.x, this.y + 1) == 8) {
             this.egg();
             return;
+        }
+        else if (levels.get(stage).getBlock(this.x, this.y + 1) == 10) {
+            this.y++;
+            levels.get(stage).illume(this.x, this.y);
         }
         this.checkWin();
         render();
@@ -142,6 +150,11 @@ class Player {
             this.egg();
             return;
         }
+        else if (levels.get(stage).getBlock(this.x - 1, this.y) == 10) {
+            this.x--;
+
+            levels.get(stage).illume(this.x, this.y);
+        }
         this.checkWin();
         render();
     }
@@ -161,6 +174,10 @@ class Player {
         else if (levels.get(stage).getBlock(this.x + 1, this.y) == 8) {
             this.egg();
             return;
+        }
+        else if (levels.get(stage).getBlock(this.x + 1, this.y) == 10) {
+            this.x++;
+            levels.get(stage).illume(this.x, this.y);
         }
         this.checkWin();
         render();
@@ -190,6 +207,9 @@ class Player {
         else if (levels.get(stage).getBlock(this.x, this.y - 1) == 8) {
             this.egg();
             return;
+        }
+        else if (levels.get(stage).getBlock(this.x, this.y - 1) == 10) {
+            this.moveUp();
         }
         else if (levels.get(stage).getBlock(this.x, this.y - 1) == this.status) {
             // 前方两格黑色方块就动一
@@ -224,6 +244,9 @@ class Player {
             this.egg();
             return;
         }
+        else if (levels.get(stage).getBlock(this.x, this.y + 1) == 10) {
+            this.moveDown();
+        }
         else if (levels.get(stage).getBlock(this.x, this.y + 1) == this.status) {
             if (levels.get(stage).getBlock(this.x, this.y + 2) == this.status) {
                 this.y += 2;
@@ -255,6 +278,9 @@ class Player {
             this.egg();
             return;
         }
+        else if (levels.get(stage).getBlock(this.x - 1, this.y) == 10) {
+            this.moveLeft();
+        }
         else if (levels.get(stage).getBlock(this.x - 1, this.y) == this.status) {
             if (levels.get(stage).getBlock(this.x - 2, this.y) == this.status) {
                 this.x -= 2;
@@ -285,6 +311,9 @@ class Player {
         else if (levels.get(stage).getBlock(this.x + 1, this.y) == 8) {
             this.egg();
             return;
+        }
+        else if (levels.get(stage).getBlock(this.x + 1, this.y) == 10) {
+            this.moveRight();
         }
         else if (levels.get(stage).getBlock(this.x + 1, this.y) == this.status) {
             if (levels.get(stage).getBlock(this.x + 2, this.y) == this.status) {
@@ -374,9 +403,13 @@ class Level {
                             case 7:
                                 drawChunk(destX, destY, '#0C0C0C');
                                 break;
+                            case 10:
+                                drawSmallChunk(destX, destY, '#FFA500');
+                                break;
                         }
                     }
                 }
+                break;
             case 1:
                 for (let y = 0; y < this.map.length; y++) {
                     for (let x = 0; x < this.map[y].length; x++) {
@@ -407,10 +440,52 @@ class Level {
                                 case 7:
                                     drawChunk(destX, destY, '#0C0C0C');
                                     break;
+                                case 10:
+                                    drawSmallChunk(destX, destY, '#FFA500');
+                                    break;
                             }
                         }
                     }
                 }
+                break;
+            case 2:
+                for (let y = 0; y < this.map.length; y++) {
+                    for (let x = 0; x < this.map[y].length; x++) {
+                        // x, y坐标差一格
+                        // 只渲染周围一格
+                        if (player.x - 2 <= x && x <= player.x + 2 && player.y - 2 <= y && y <= player.y + 2) {
+                            let destX = startX + 40 * x;
+                            let destY = startY + 40 * y;
+                            switch (this.map[y][x]) {
+                                case 1:
+                                    drawChunk(destX, destY, '#000000');
+                                    break;
+                                case 2:
+                                    drawChunk(destX, destY, '#0000FF');
+                                    break;
+                                case 3:
+                                    drawChunk(destX, destY, '#00FF00');
+                                    break;
+                                case 4:
+                                    drawChunk(destX, destY, '#FFFF00');
+                                    break;
+                                case 5:
+                                    drawChunk(destX, destY, '#FF00FF');
+                                    break;
+                                case 6:
+                                    drawChunk(destX, destY, '#696969');
+                                    break;
+                                case 7:
+                                    drawChunk(destX, destY, '#0C0C0C');
+                                    break;
+                                case 10:
+                                    drawSmallChunk(destX, destY, '#FFA500');
+                                    break;
+                            }
+                        }
+                    }
+                }
+                break;
         }
     }
 
@@ -420,6 +495,9 @@ class Level {
                 ctx.fillStyle = '#FFFFFF';
                 break;
             case 1:
+                ctx.fillStyle = '#282828';
+                break;
+            case 2:
                 ctx.fillStyle = '#282828';
                 break;
         }
@@ -438,6 +516,11 @@ class Level {
         else {
             this.map[this.transBlockPos[1]][this.transBlockPos[0]] = 0;
         }
+    }
+
+    illume(x, y) {
+        this.theme = 2;
+        this.map[y][x] = 0;
     }
 
     getTeleportPos() {
@@ -507,7 +590,7 @@ for (let i = 0; i < MAP_LIST.length; i++) {
 let Ingame = false;
 
 // stage starts from 0
-let stage = 0;
+let stage = 5;
 
 let player = new Player(0, 1, 0, 0);
 // values for the special effects
@@ -519,6 +602,11 @@ let delta = 0.01;
 function drawChunk(x, y, color) {
     ctx.fillStyle = color;
     ctx.fillRect(x, y, CHUNK_SIZE, CHUNK_SIZE);
+}
+
+function drawSmallChunk(x, y, color) {
+    ctx.fillStyle = color;
+    ctx.fillRect(x + CHUNK_SIZE / 4, y + CHUNK_SIZE / 4, CHUNK_SIZE / 2, CHUNK_SIZE / 2);
 }
 
 function save(){
