@@ -590,7 +590,7 @@ for (let i = 0; i < MAP_LIST.length; i++) {
 let Ingame = false;
 
 // stage starts from 0
-let stage = 5;
+let stage = 0;
 
 let player = new Player(0, 1, 0, 0);
 // values for the special effects
