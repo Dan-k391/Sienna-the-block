@@ -66,6 +66,9 @@ class Player {
         if (stage == 0) {
             eggOne();
         }
+        else {
+            otherEgg();
+        }
     }
 
     switch() {
@@ -717,7 +720,7 @@ function renderStart() {
     let startY = Math.floor(canvas.height / 2 - 200);
 
     let title = new Font('The Block', startX, startY);
-    let subTitle1 = new Font('Dan-k391', startX + 50, startY + 100);
+    let subTitle1 = new Font('By: Dan-K391', startX + 50, startY + 100);
     let subTitle2 = new Font('Press F11 to fullscreen', startX + 50, startY + 150);
     let subTitle3 = new Font('Fullscreen for best experience', startX + 50, startY + 200);
     let subTitle4 = new Font('Press C to start', startX + 50, startY + 250);
@@ -737,7 +740,9 @@ function plotOne() {
             'her name is Sienna',
             'and she was trapped in a giant maze',
             'find the way out',
-            '(Press space to continue)'
+            '(Press space to continue)',
+            'Use WASD or arrow keys to move',
+            'Hold shift to dash'
         ]
     );
 }
@@ -750,6 +755,16 @@ function eggOne() {
             'But also a color',
             'Press X to switch the color of Sienna',
             '(Press space to continue)'
+        ]
+    );
+}
+
+function otherEgg() {
+    renderSubtitles(
+        [
+            'You found an egg',
+            'Uncompleted yet',
+            'I will add it later'
         ]
     );
 }
