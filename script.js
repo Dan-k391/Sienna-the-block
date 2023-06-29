@@ -50,7 +50,6 @@ class Player {
         if (stage == FINAL) {
             let date = new Date();
             gameEnd = true;
-            endTime = date.toLocaleTimeString();
             // update the words
             endWords[2][1] = `It\'s ${date.toLocaleTimeString() + ', ' + date.toLocaleDateString()}`;
             window.removeEventListener('keydown', keyDown, false);
