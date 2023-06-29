@@ -48,6 +48,13 @@ class Player {
         stage++;
         // whether the game ends
         if (stage == FINAL) {
+            gameEnd = true;
+            endTime = date.toLocaleTimeString();
+            // update the words
+            endWords[2][1] = `It\'s ${endTime}`;
+            window.removeEventListener('keydown', keyDown, false);
+            window.addEventListener('keydown', endKey, false);
+            renderEnd();
             console.log('you win');
             return;
         }
@@ -66,8 +73,14 @@ class Player {
         if (stage == 0) {
             eggOne();
         }
+        else if (stage == 1) {
+            eggTwo();
+        }
+        else if (stage == 2) {
+            eggThree();
+        }
         else {
-            otherEgg();
+            otherEgg(stage + 1);
         }
     }
 
@@ -108,6 +121,8 @@ class Player {
         else if (levels.get(stage).getBlock(this.x, this.y - 1) == 10) {
             this.y--;
             levels.get(stage).illume(this.x, this.y);
+            // do not render
+            return;
         }
         this.checkWin();
         render();
@@ -132,6 +147,7 @@ class Player {
         else if (levels.get(stage).getBlock(this.x, this.y + 1) == 10) {
             this.y++;
             levels.get(stage).illume(this.x, this.y);
+            return;
         }
         this.checkWin();
         render();
@@ -155,8 +171,8 @@ class Player {
         }
         else if (levels.get(stage).getBlock(this.x - 1, this.y) == 10) {
             this.x--;
-
             levels.get(stage).illume(this.x, this.y);
+            return;
         }
         this.checkWin();
         render();
@@ -181,6 +197,7 @@ class Player {
         else if (levels.get(stage).getBlock(this.x + 1, this.y) == 10) {
             this.x++;
             levels.get(stage).illume(this.x, this.y);
+            return;
         }
         this.checkWin();
         render();
@@ -329,6 +346,13 @@ class Player {
         render();
     }
 
+    reset() {
+        this.status = 0;
+        this.setXY(levels.get(stage).startPos[0], levels.get(stage).startPos[1]);
+        levels.get(stage).teleportCount = 0;
+        render();
+    }
+
     switchColor() {
         if (this.color == "#FF0000") {
             this.setColor("#A0522D");
@@ -404,7 +428,7 @@ class Level {
                                 drawChunk(destX, destY, '#696969');
                                 break;
                             case 7:
-                                drawChunk(destX, destY, '#0C0C0C');
+                                drawChunk(destX, destY, '#181818');
                                 break;
                             case 10:
                                 drawSmallChunk(destX, destY, '#FFA500');
@@ -524,6 +548,7 @@ class Level {
     illume(x, y) {
         this.theme = 2;
         this.map[y][x] = 0;
+        gotTorch();
     }
 
     getTeleportPos() {
@@ -589,16 +614,69 @@ for (let i = 0; i < MAP_LIST.length; i++) {
     levels.add(new Level(MAP_LIST[i], THEMES[i], MAP_SIZE[i], START_POS[i], FINISH_COORD[i], TRANS_BLOCK_POS[i], TELEPORT_POS[i]));
 }
 
+let date = new Date();
+let startTime;
+let endTime;
+
 // keep as false
 let Ingame = false;
+let gameEnd = false;
 
 // stage starts from 0
-let stage = 0;
+let stage = 5;
 
 let player = new Player(0, 1, 0, 0);
 // values for the special effects
 let alpha = 1;
 let delta = 0.01;
+
+// The ending words
+let endWords = [
+    [
+        'Press space to continue',
+        'Congrats!',
+        'Well, you have finished the game',
+        'Honestly',
+        'I don\'t know who you are',
+        'And I don\'t know what to say',
+    ],
+    [
+        'Maybe you\'re my friend',
+        'Maybe you\'re a random player',
+        'Maybe you\'re me',
+        'Or',
+        'Maybe you\'re Sienna',
+        'I don\'t know',
+        'But I\'m glad you\'re here'
+    ],
+    [
+        'Let me check the time',
+        // takes the space, will be replaced by the time
+        '---',
+        'It\'s a long time since then', 
+        'Sorry for saying some stupid words here',
+    ],
+    [
+        'As you can see',
+        'I\'m just a coder',
+        'who is not good at writing',
+        'So',
+        'I\'ll just say',
+    ],
+    [
+        'Thanks for playing my game',
+    ],
+    [
+        'By: Dan-k391',
+        'Here, the code is bad',
+        'The ideas come from',
+        'ZJJ',
+        'Carl',
+        'And me',
+    ]
+];
+let page = 0;
+let word = 0;
 
 // draws the specific chunk at the given coordinates
 // x和y为原始坐标，不用换算
@@ -635,14 +713,14 @@ window.onload = function() {
 }
 
 function init() {
-    window.addEventListener('resize', resizecanvas, false);
-    window.addEventListener('keydown', keydown, false);
+    window.addEventListener('resize', resizeCanvas, false);
+    window.addEventListener('keydown', keyDown, false);
     // window.addEventListener('keyup', keyup, false);
     load();
-    resizecanvas();
+    resizeCanvas();
 }
 
-function resizecanvas() {
+function resizeCanvas() {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
     // The following line sets the player to the start position
@@ -655,11 +733,12 @@ function resizecanvas() {
     render();
 }
 
-function keydown(event) {
+function keyDown(event) {
     switch(event.keyCode) {
         // KeyC to start the game
         case 67:
             if (!Ingame) {
+                startTime = date.toLocaleTimeString();
                 startGame();
             }
             break;
@@ -667,6 +746,9 @@ function keydown(event) {
         case 88:
             player.switchColor();
             break;
+        // KeyRto reset the level
+        case 82:
+            player.reset();
         // STRICTLY OBEY UP DOWN LEFT RIGHT
         case 38: case 87:
             if (event.shiftKey) {
@@ -706,6 +788,15 @@ function keydown(event) {
     }
 }
 
+function endKey(event) {
+    switch(event.keyCode) {
+        // Space to continue
+        case 32:
+            showNext();
+            break;
+    }
+}
+
 function startGame() {
     Ingame = true;
     // javascript 666666
@@ -732,6 +823,16 @@ function renderStart() {
     subTitle4.draw(1);
 }
 
+function gotTorch() {
+    renderSubtitles(
+        [
+            'You found a torch!',
+            'It broadens your vision',
+            '(Press space to continue)'
+        ]
+    );
+}
+
 function plotOne() {
     renderSubtitles(
         [
@@ -740,9 +841,9 @@ function plotOne() {
             'her name is Sienna',
             'and she was trapped in a giant maze',
             'find the way out',
-            '(Press space to continue)',
             'Use WASD or arrow keys to move',
-            'Hold shift to dash'
+            'Hold shift to dash',
+            '(Press space to continue)'
         ]
     );
 }
@@ -750,6 +851,7 @@ function plotOne() {
 function eggOne() {
     renderSubtitles(
         [
+            'Congrats, you found egg one',
             'In fact',
             'Sienna is not just a name',
             'But also a color',
@@ -759,14 +861,62 @@ function eggOne() {
     );
 }
 
-function otherEgg() {
+function eggTwo() {
     renderSubtitles(
         [
-            'You found an egg',
+            'Congrats, you found egg two',
+            'In fact',
+            'In the first version of this game',
+            'This is where the egg is placed',
+            '(Press space to continue)'
+        ]
+    );
+}
+
+function eggThree() {
+    renderSubtitles(
+        [
+            'Congrats, you found egg three',
+            'In fact',
+            'This game is inspired by an old game "Adventure"',
+            'Where eggs are first introduced to video games',
+            '(Press space to continue)'
+        ]
+    );
+}
+
+function otherEgg(level) {
+    renderSubtitles(
+        [
+            `You found an egg from level ${level}`,
             'Uncompleted yet',
             'I will add it later'
         ]
     );
+}
+
+function renderEnd() {
+    renderSubtitles(
+        endWords[page].slice(0, word + 1)
+    );
+
+    // probably the shittest code I ever wrote but I don't care😎
+}
+
+function showNext() {
+    if (word < endWords[page].length - 1) {
+        word++;
+    }
+    else {
+        NextPage();
+    }
+    render();
+}
+
+function NextPage() {
+    page++;
+    word = 0;
+    render();
 }
 
 // call without timeout
@@ -802,7 +952,10 @@ function clearCanvas() {
 
 function render() {
     // if game has not started render the start page
-    if (Ingame) {
+    if (gameEnd) {
+        renderEnd();
+    } 
+    else if (Ingame) {
         player.draw();
     }
     else {
@@ -883,4 +1036,5 @@ function fadeIn(content) {
     }
 }
 
-
+// The traditional blank line at the end of the file
+// By: Dan-K391
