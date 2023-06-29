@@ -48,10 +48,11 @@ class Player {
         stage++;
         // whether the game ends
         if (stage == FINAL) {
+            let date = new Date();
             gameEnd = true;
             endTime = date.toLocaleTimeString();
             // update the words
-            endWords[2][1] = `It\'s ${endTime}`;
+            endWords[2][1] = `It\'s ${date.toLocaleTimeString() + ', ' + date.toLocaleDateString()}`;
             window.removeEventListener('keydown', keyDown, false);
             window.addEventListener('keydown', endKey, false);
             renderEnd();
@@ -78,6 +79,12 @@ class Player {
         }
         else if (stage == 2) {
             eggThree();
+        }
+        else if (stage == 4) {
+            eggFive();
+        }
+        else if (stage == 5) {
+            eggSix();
         }
         else {
             otherEgg(stage + 1);
@@ -416,19 +423,22 @@ class Level {
                                 drawChunk(destX, destY, '#0000FF');
                                 break;
                             case 3:
-                                drawChunk(destX, destY, '#00FF00');
+                                drawChunk(destX, destY, '#32CD32');
                                 break;
                             case 4:
-                                drawChunk(destX, destY, '#FFFF00');
+                                drawChunk(destX, destY, '#FFD700');
                                 break;
                             case 5:
-                                drawChunk(destX, destY, '#FF00FF');
+                                drawChunk(destX, destY, '#EE82EE');
                                 break;
                             case 6:
                                 drawChunk(destX, destY, '#696969');
                                 break;
                             case 7:
                                 drawChunk(destX, destY, '#181818');
+                                break;
+                            case 8:
+                                drawChunk(destX, destY, '#CDCDC1');
                                 break;
                             case 10:
                                 drawSmallChunk(destX, destY, '#FFA500');
@@ -453,19 +463,22 @@ class Level {
                                     drawChunk(destX, destY, '#0000FF');
                                     break;
                                 case 3:
-                                    drawChunk(destX, destY, '#00FF00');
+                                    drawChunk(destX, destY, '#32CD32');
                                     break;
                                 case 4:
-                                    drawChunk(destX, destY, '#FFFF00');
+                                    drawChunk(destX, destY, '#FFD700');
                                     break;
                                 case 5:
-                                    drawChunk(destX, destY, '#FF00FF');
+                                    drawChunk(destX, destY, '#EE82EE');
                                     break;
                                 case 6:
                                     drawChunk(destX, destY, '#696969');
                                     break;
                                 case 7:
-                                    drawChunk(destX, destY, '#0C0C0C');
+                                    drawChunk(destX, destY, '#181818');
+                                    break;
+                                case 8:
+                                    drawChunk(destX, destY, '#CDCDC1');
                                     break;
                                 case 10:
                                     drawSmallChunk(destX, destY, '#FFA500');
@@ -491,19 +504,22 @@ class Level {
                                     drawChunk(destX, destY, '#0000FF');
                                     break;
                                 case 3:
-                                    drawChunk(destX, destY, '#00FF00');
+                                    drawChunk(destX, destY, '#32CD32');
                                     break;
                                 case 4:
-                                    drawChunk(destX, destY, '#FFFF00');
+                                    drawChunk(destX, destY, '#FFD700');
                                     break;
                                 case 5:
-                                    drawChunk(destX, destY, '#FF00FF');
+                                    drawChunk(destX, destY, '#EE82EE');
                                     break;
                                 case 6:
                                     drawChunk(destX, destY, '#696969');
                                     break;
                                 case 7:
-                                    drawChunk(destX, destY, '#0C0C0C');
+                                    drawChunk(destX, destY, '#181818');
+                                    break;
+                                case 8:
+                                    drawChunk(destX, destY, '#CDCDC1');
                                     break;
                                 case 10:
                                     drawSmallChunk(destX, destY, '#FFA500');
@@ -614,16 +630,12 @@ for (let i = 0; i < MAP_LIST.length; i++) {
     levels.add(new Level(MAP_LIST[i], THEMES[i], MAP_SIZE[i], START_POS[i], FINISH_COORD[i], TRANS_BLOCK_POS[i], TELEPORT_POS[i]));
 }
 
-let date = new Date();
-let startTime;
-let endTime;
-
 // keep as false
-let Ingame = false;
+let Ingame = true;
 let gameEnd = false;
 
 // stage starts from 0
-let stage = 5;
+let stage = 0;
 
 let player = new Player(0, 1, 0, 0);
 // values for the special effects
@@ -654,12 +666,13 @@ let endWords = [
         // takes the space, will be replaced by the time
         '---',
         'It\'s a long time since then', 
-        'Sorry for saying some stupid words here',
+        'Sorry for saying some weird stuff',
     ],
     [
         'As you can see',
         'I\'m just a coder',
         'who is not good at writing',
+        'And not good at expressing my feelings',
         'So',
         'I\'ll just say',
     ],
@@ -885,6 +898,30 @@ function eggThree() {
     );
 }
 
+function eggFive() {
+    renderSubtitles(
+        [
+            'Congrats, you found egg five',
+            'In fact',
+            'This level has more than one egg',
+            '(Press space to continue)'
+        ]
+    );
+}
+
+function eggSix() {
+    renderSubtitles(
+        [
+            'Congrats, you found egg six',
+            'I believe that you noticed that this level is hard',
+            'Find The way out',
+            'Hint: 1. Find the yellow block',
+            '2. Use R to reset Sienna\'s position',
+            '(Press space to continue)'
+        ]
+    );
+}
+
 function otherEgg(level) {
     renderSubtitles(
         [
@@ -896,9 +933,30 @@ function otherEgg(level) {
 }
 
 function renderEnd() {
-    renderSubtitles(
-        endWords[page].slice(0, word + 1)
-    );
+    if (page == endWords.length) {
+        clearCanvas();
+
+        let image = new Image();
+        
+        image.onload = function(){
+            ctx.drawImage(image, 600, 500);
+        }
+
+        image.src = 'old.png';
+        let end = new Font('Thanks for playing my game', 350, 350);
+        end.draw(2);
+        ctx.drawImage(image, 0, 0, 700, 700);
+        console.log('此代码由王逸凡编写')
+        console.log('代码总长度1644行, 由于时间紧迫, 没有做任何优化');
+        console.log('愿玩的开心');
+        console.log('创意来自Carl, Denial和声优');
+        console.log('物理引擎来自王逸凡和声优');
+    }
+    else {
+        renderSubtitles(
+            endWords[page].slice(0, word + 1)
+        );
+    }
 
     // probably the shittest code I ever wrote but I don't care😎
 }
