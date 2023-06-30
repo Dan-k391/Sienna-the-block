@@ -750,7 +750,6 @@ function keyDown(event) {
         // KeyC to start the game
         case 67:
             if (!Ingame) {
-                startTime = date.toLocaleTimeString();
                 startGame();
             }
             break;
