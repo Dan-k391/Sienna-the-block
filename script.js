@@ -58,6 +58,9 @@ class Player {
             console.log('you win');
             return;
         }
+        else {
+            save();
+        }
         this.setXY(levels.get(stage).startPos[0], levels.get(stage).startPos[1]);
         let startX = Math.floor(canvas.width / 2 - (levels.get(stage).mapSize[0] + 1) * 20);
         let startY = Math.floor(canvas.height / 2 - (levels.get(stage).mapSize[1] + 1) * 20);
@@ -702,6 +705,11 @@ function drawSmallChunk(x, y, color) {
     ctx.fillRect(x + CHUNK_SIZE / 4, y + CHUNK_SIZE / 4, CHUNK_SIZE / 2, CHUNK_SIZE / 2);
 }
 
+function resetSave(){
+    document.cookie = 'stage=0';
+    console.log(document.cookie);
+}
+
 function save(){
     document.cookie = 'stage=' + stage.toString();
     console.log(document.cookie);
@@ -716,6 +724,7 @@ function load(){
             stage = parseInt(c.substring('stage='.length, c.length));
         }
     }
+    player.setXY(levels.get(stage).startPos[0], levels.get(stage).startPos[1]);
     console.log(document.cookie);
 }
 
@@ -759,7 +768,13 @@ function keyDown(event) {
             break;
         // KeyRto reset the level
         case 82:
-            player.reset();
+            if (event.shiftKey) {
+                resetSave();
+            }
+            else {
+                player.reset();
+            }
+            break;
         // STRICTLY OBEY UP DOWN LEFT RIGHT
         case 38: case 87:
             if (event.shiftKey) {
@@ -801,6 +816,11 @@ function keyDown(event) {
 
 function endKey(event) {
     switch(event.keyCode) {
+        case 82:
+            if (event.shiftKey) {
+                resetSave();
+            }
+            break;
         // Space to continue
         case 32:
             showNext();
@@ -914,7 +934,7 @@ function eggSix() {
             'I believe that you noticed that this level is hard',
             'Find The way out',
             'Hint: 1. Find the yellow block',
-            '2. Use R to reset Sienna\'s position',
+            '2. Press R to reset Sienna\'s position',
             '(Press space to continue)'
         ]
     );
