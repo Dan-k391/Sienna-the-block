@@ -51,7 +51,7 @@ class Player {
             let date = new Date();
             gameEnd = true;
             // update the words
-            endWords[2][1] = `It\'s ${date.toLocaleTimeString() + ', ' + date.toLocaleDateString()}`;
+            endWords[6][1] = `It\'s ${date.toLocaleTimeString() + ', ' + date.toLocaleDateString()}`;
             window.removeEventListener('keydown', keyDown, false);
             window.addEventListener('keydown', endKey, false);
             renderEnd();
@@ -454,7 +454,8 @@ class Level {
                     for (let x = 0; x < this.map[y].length; x++) {
                         // x, y坐标差一格
                         // 只渲染周围一格
-                        if (player.x - 1 <= x && x <= player.x + 1 && player.y - 1 <= y && y <= player.y + 1) {
+                        if (player.x - 1 <= x && x <= player.x + 1 && player.y - 1 <= y && y <= player.y + 1
+                            || x == this.transBlockPos[0] && y == this.transBlockPos[1]) {
                             let destX = startX + 40 * x;
                             let destY = startY + 40 * y;
                             switch (this.map[y][x]) {
@@ -495,7 +496,8 @@ class Level {
                     for (let x = 0; x < this.map[y].length; x++) {
                         // x, y坐标差一格
                         // 只渲染周围一格
-                        if (player.x - 2 <= x && x <= player.x + 2 && player.y - 2 <= y && y <= player.y + 2) {
+                        if (player.x - 2 <= x && x <= player.x + 2 && player.y - 2 <= y && y <= player.y + 2
+                            || x == this.transBlockPos[0] && y == this.transBlockPos[1]) {
                             let destX = startX + 40 * x;
                             let destY = startY + 40 * y;
                             switch (this.map[y][x]) {
@@ -664,22 +666,55 @@ let endWords = [
         'But I\'m glad you\'re here'
     ],
     [
+        'I\'m trying to write a minecraft style dialog',
+        'Turns out it\'s not that easy',
+        'Or maybe I\'m just not good enough',
+        'Let me think about something to say',
+        'Ha! I got it'
+    ],
+    [
+        'This is a very old game',
+        'The first ideas of this game were from 2020???',
+        'I don\'t remember, probably 2020',
+        'And I wrote it in 2021',
+        'On the brithday'
+    ],
+    [
+        'Well, that time I was pretty much a noob',
+        'I nearly didn\'t know how to use classes',
+        'And I just assembled the code in the style I thought was correct',
+        'Amazingly, it actually executed without any problems!'
+    ],
+    [
+        'However the code did not run properly',
+        'Mainly because python just cannot be pakaged successfully',
+        'So later I thought of moving to a web version',
+        'So that everyone could play it',
+        'And here comes this version,',
+        'The version that you are playing'
+    ],
+    [
         'Let me check the time',
         // takes the space, will be replaced by the time
         '---',
-        'It\'s a long time since then', 
-        'Sorry for saying some weird stuff',
+        'It\'s a long time since then',
+        '......',
+        '......'
     ],
     [
         'As you can see',
         'I\'m just a coder',
         'who is not good at writing',
         'And not good at expressing my feelings',
-        'So',
-        'I\'ll just say',
+        '......',
+        '......'
     ],
     [
-        'Thanks for playing my game',
+        'So,',
+        'I guess I just want to say',
+    ],
+    [
+        'Thanks for playing my game'
     ],
     [
         'By: Dan-k391',
@@ -931,10 +966,12 @@ function eggSix() {
     renderSubtitles(
         [
             'Congrats, you found egg six',
-            'I believe that you noticed that this level is hard',
-            'Find The way out',
-            'Hint: 1. Find the yellow block',
-            '2. Press R to reset Sienna\'s position',
+            'This is a hard one',
+            'I\'m glad that you can find it',
+            'Honestly, I don\'t know what to put here',
+            'You should just know, this is an egg',
+            'An egg from 22:48, 2023/6/30',
+            'Press R to reset the position of Sienna',
             '(Press space to continue)'
         ]
     );
