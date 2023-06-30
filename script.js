@@ -630,7 +630,7 @@ for (let i = 0; i < MAP_LIST.length; i++) {
 }
 
 // keep as false
-let Ingame = true;
+let Ingame = false;
 let gameEnd = false;
 
 // stage starts from 0
